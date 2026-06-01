@@ -2,7 +2,7 @@
 
 **Question:** Should a small, single-purpose open-source CLI tool prioritize zero runtime dependencies, even at the cost of some developer convenience? Answer in 3-5 sentences with a clear recommendation.
 
-**Participants:** codex grok claude-haiku
+**Participants:** codex grok claude
 
 ---
 
@@ -11,27 +11,29 @@
 ### P1 (codex)
 
 ```
-Yes, for a small single-purpose open-source CLI, zero runtime dependencies should usually be the default priority, assuming the dependency-free approach does not materially harm correctness, security, or cross-platform behavior. Fewer runtime dependencies reduce install friction, supply-chain risk, version breakage, and long-term maintenance burden, which matters more for small tools than marginal developer convenience. Developer convenience is still a valid tradeoff when a dependency clearly improves reliability or avoids reimplementing complex, failure-prone logic. Recommendation: optimize for zero runtime dependencies by default, but allow narrowly justified exceptions where the operational benefit is concrete and durable.
+Yes, for a small, single-purpose open-source CLI, zero or near-zero runtime dependencies should be the default bias. The main reasons are durability, security, install simplicity, and predictability: every added runtime dependency increases supply-chain risk, versioning drift, and support surface for a tool whose value is supposed to be narrow and stable. Developer convenience matters, but it is usually a weaker concern here because build-time tooling, code generation, or small internal utilities can often preserve maintainability without shipping extra runtime baggage. My recommendation is to prioritize zero runtime dependencies unless a dependency delivers substantial user-facing value that would be expensive, error-prone, or unrealistic to reimplement correctly.
 
 ```
 
 ### P2 (grok)
 
 ```
-**Yes, it should prioritize zero runtime dependencies.**
+**Yes, a small single-purpose open-source CLI tool should prioritize zero runtime dependencies.**
 
-For a small, single-purpose CLI, the user-facing costs of even modest dependencies—install latency, startup time, disk footprint, supply-chain exposure, and fragility in constrained environments (containers, CI, air-gapped systems, minimal images)—are paid on every invocation by every user, while the developer-convenience benefit is paid once by a small set of contributors. Successful minimalist tools (ripgrep, fd, fzf, jq, many Go/Rust single-binary CLIs) demonstrate that the reliability, portability, and trust advantages compound over the tool’s lifetime and directly drive adoption; users choose and keep such tools precisely because they have no hidden surface area.
+The dominant failure mode for such tools is not missing features or slightly slower development—it is installation friction, environmental breakage, and supply-chain fragility that prevent users from ever running the tool reliably. Users (especially in ops, CI, air-gapped, or heterogeneous environments) strongly prefer a single static binary or a single-file script that requires nothing beyond the OS; repeated guidance across CLI best-practice collections, Go/Rust distribution patterns (e.g., GitHub's `gh`), and Node/Python minimalism guides emphasizes exactly this: "no one wants to install 80 node modules or set up a venv just to use your tool." The left-pad incident and ongoing transitive-dependency attacks are concrete demonstrations that even trivial runtime deps create outsized risk and maintenance burden relative to the size of a narrow tool.
 
-Developer inconvenience is real but bounded for narrow scope: rich standard libraries (Go, Rust) plus careful language choice or disciplined bundling cover most needs without pulling in transitive graphs. When a feature would require a heavy or broad dependency, the correct response is usually to narrow the tool’s charter or implement the minimal slice required rather than accept the dependency tax. A few carefully chosen, zero-transitive, single-purpose crates or modules can occasionally be justified, but the default and strong bias should be zero.
+For limited scope, the stdlib (or carefully vendored minimal code) in CLI-friendly languages is usually sufficient for argument parsing, basic I/O, HTTP, JSON, etc.; the developer "cost" is largely a one-time language choice (Go or Rust make zero-dep the path of least resistance) rather than heroic reinvention. Long-term, the tool gains portability, instant startup, smaller attack surface, and dramatically lower maintenance (no perpetual dep updates or compatibility testing).
 
-The long-term maintenance and security burden of dependencies on a widely distributed utility almost always exceeds the short-term coding friction saved. Prioritizing zero dependencies is therefore the rational default for this class of tool.
-
-```
-
-### P3 (claude-haiku)
+The only reasonable exception is when the entire audience already lives inside a specific heavy ecosystem and accepts its package manager (e.g., a pure-dev `npx`-only utility). For a general-purpose open-source CLI, zero runtime deps is the correct default.
 
 ```
-Yes, a single-purpose CLI tool should prioritize zero runtime dependencies. The limited scope of a single-purpose tool means the convenience cost is bounded—most core functionality can be achieved with modern standard libraries or modest internal implementations. Conversely, the distribution benefits compound across all users: faster downloads, easier installation in constrained environments (containers, air-gapped systems), reduced supply chain attack surface, and simplified debugging when issues occur. For widely-distributed tools, eliminating even indirect dependency risks pays dividends across thousands of installations. Reserve external dependencies for truly irreplaceable functionality (cryptographic primitives, proven compression algorithms), not conveniences you can own.
+
+### P3 (claude)
+
+```
+**Yes, zero runtime dependencies should be the default for small, single-purpose CLI tools, with narrow exceptions.**
+
+The primary value of a single-purpose CLI tool is reliability at the point of use — a tool that fails to install or breaks because a transitive dependency released a bad patch has failed its users before doing any work. Zero runtime dependencies eliminates an entire class of failure (supply chain breakage, version conflicts, `node_modules` bloat, Python virtualenv friction) that disproportionately affects the casual or infrequent users who are most likely to be frustrated by them. The "developer convenience" cost is real but bounded: it typically means reimplementing a small utility function or accepting a slightly more verbose implementation, whereas the user convenience gain is unbounded across every install. The one legitimate exception is when a dependency provides correctness guarantees the tool genuinely cannot replicate — cryptographic primitives, locale-aware Unicode handling — in which case a single, stable, audited dependency is preferable to a hand-rolled approximation. Outside that narrow case, reaching for a dependency in a small CLI tool is optimizing for the author's writing experience at the expense of every future user's runtime experience.
 
 ```
 

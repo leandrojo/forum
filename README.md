@@ -18,8 +18,11 @@ The transcript is the product.
 ```bash
 ./examples/forum_debate.sh --rounds 1 \
   "Should a small CLI prioritize zero runtime dependencies over developer convenience?" \
-  codex grok claude-haiku
+  codex grok claude
 ```
+
+> Participant names are just the provider (`grok`, `codex`, `gemini`, `claude`) —
+> each adapter picks a sensible default model, so you don't think about tiers.
 
 **2. Watch it run** (each participant is a real, local CLI):
 
@@ -27,8 +30,8 @@ The transcript is the product.
 Round 1:
   P1 (codex)... ok
   P2 (grok)... ok
-  P3 (claude-haiku)... ok
-Transcript: transcripts/debate-20260601T175402Z-70200/transcript.md
+  P3 (claude)... ok
+Transcript: transcripts/debate-20260601T182039Z-48889/transcript.md
 ```
 
 **3. Read the artifact** — a single Markdown transcript with each peer's answer
@@ -36,14 +39,16 @@ under a neutral label. Excerpt:
 
 ```markdown
 ### P1 (codex)
-Yes, for a small single-purpose open-source CLI, zero runtime dependencies
-should usually be the default... allow narrowly justified exceptions where the
-operational benefit is concrete and durable.
+Yes, for a small, single-purpose open-source CLI, zero or near-zero runtime
+dependencies should be the default bias... unless a dependency delivers
+substantial user-facing value that would be expensive or error-prone to
+reimplement correctly.
 
-### P2 (grok)
-Yes, it should prioritize zero runtime dependencies. The user-facing costs of
-even modest dependencies are paid on every invocation by every user, while the
-developer-convenience benefit is paid once by a small set of contributors...
+### P3 (claude)
+Yes, zero runtime dependencies should be the default... a tool that fails to
+install or breaks because a transitive dependency released a bad patch has
+failed its users before doing any work. The one legitimate exception is when a
+dependency provides correctness guarantees the tool genuinely cannot replicate.
 ```
 
 → Full transcript of this run: [`docs/examples/sample-debate.md`](docs/examples/sample-debate.md)
