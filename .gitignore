@@ -1,0 +1,30 @@
+# Forum — .gitignore
+
+# Keep the attic/ directory out of the repository by default.
+# These are legacy artifacts from earlier prototyping, kept locally for reference only.
+attic/
+
+# Temporary and generated files
+*.tmp
+*.temp
+*.log
+*.bak
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE / tooling
+.idea/
+.vscode/
+*.code-workspace
+
+# Shell / execution artifacts
+*.pid
+nohup.out
+
+# Generated debate outputs stay local unless explicitly promoted to docs.
+transcripts/

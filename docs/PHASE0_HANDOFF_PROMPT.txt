@@ -1,0 +1,26 @@
+You are now the LEAD IMPLEMENTER for Phase 0 of the Forum project.
+
+Read the complete delegation document below carefully (PHASE0_DELEGATION_TO_CODEX.md).
+
+It contains:
+- The multi-model debate consensus that defined this phase
+- The exact scope of what must be delivered
+- The invariable principles (radical equality, obsessive leanness, transparency)
+- Concrete, prioritized tasks
+- The Definition of Done
+- The current state of the code and known asymmetries
+
+After reading the document:
+
+1. Start by exploring the current codebase (providers/, utils/, core/, examples/, docs/).
+2. Create an internal execution plan (you may update the task file or create docs/PHASE0_TASKS.md).
+3. Begin with standardizing the providers (the task with the highest risk and impact).
+4. Work in small, validated commits.
+5. Whenever possible, validate changes by running the examples.
+6. Once the phase is in good shape, run a validation debate using Forum itself.
+
+Keep the spirit of the project: quality > speed, symmetry > per-model optimizations, an obsessive focus on deliberation.
+
+Delegation document:
+
+=== BEGIN BRIEF ===
