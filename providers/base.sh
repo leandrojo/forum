@@ -31,7 +31,7 @@ call_participant() {
         gemini|gemini-*)
             call_gemini "$participant_id" "$prompt" "$timeout"
             ;;
-        grok|grok-*|grok-build|xai-*)
+        grok|grok-*|xai-*)
             call_grok "$participant_id" "$prompt" "$timeout"
             ;;
         claude|claude-sonnet|claude-opus|claude-haiku|sonnet|opus|haiku)
@@ -54,7 +54,7 @@ get_participant_model_id() {
         gemini|gemini-*)
             get_gemini_model_id "$participant_id"
             ;;
-        grok|grok-*|grok-build|xai-*)
+        grok|grok-*|xai-*)
             get_grok_model_id "$participant_id"
             ;;
         claude|claude-sonnet|claude-opus|claude-haiku|sonnet|opus|haiku)

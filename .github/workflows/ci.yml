@@ -11,8 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: ShellCheck (advisory)
-        continue-on-error: true
+      - name: ShellCheck
         run: shellcheck providers/*.sh utils/*.sh core/*.sh examples/*.sh tests/*.sh
 
       - name: Provider contract test

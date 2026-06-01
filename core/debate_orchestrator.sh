@@ -113,7 +113,7 @@ append_to_transcript() {
                 cat "$f"
                 printf '\n```\n\n'
             else
-                echo "_no response_\n\n"
+                printf '_no response_\n\n'
             fi
             i=$((i+1))
         done
@@ -130,7 +130,8 @@ run_parallel() {
 
     [[ ${#parts[@]} -ge 1 ]] || { echo "Need at least 1 participant"; return 1; }
 
-    local id="debate-$(date -u +%Y%m%dT%H%M%SZ)-$$"
+    local id
+    id="debate-$(date -u +%Y%m%dT%H%M%SZ)-$$"
     local dir="$root/$id"
     mkdir -p "$dir"
 
