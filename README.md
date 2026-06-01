@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/forum-hero-forvm.jpg" alt="Forum — the public square of debate" width="100%">
+</p>
+
 # Forum
 
 [![CI](https://github.com/leandrojo/forum/actions/workflows/ci.yml/badge.svg)](https://github.com/leandrojo/forum/actions/workflows/ci.yml)
