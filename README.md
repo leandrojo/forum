@@ -82,6 +82,38 @@ Forum's distinctiveness is a *refusal*, enforced in code:
 - You need a chat UI, a hosted service, or a general agent framework. Forum is
   none of those, on purpose — see the [roadmap](docs/ROADMAP.md).
 
+## Install
+
+Forum is a self-contained **agent skill** — the debate engine ships inside the
+skill folder, so it installs into any supported agent (Claude Code, Codex,
+Cursor, Gemini, Copilot, …) with one command via the open
+[skills](https://github.com/vercel-labs/skills) CLI:
+
+```bash
+npx skills add leandrojo/forum              # into the current project (.<agent>/skills/)
+npx skills add leandrojo/forum -g           # global (~/.<agent>/skills/)
+npx skills add leandrojo/forum -a claude-code -g   # target a specific agent
+```
+
+Then invoke it in your agent:
+
+```
+/forum "Should we use a queue or direct processing here?" grok codex gemini claude
+```
+
+> **What it runs.** Forum shells out to the provider CLIs you've already
+> authenticated — it manages no API keys and transmits nothing itself. It is a
+> skill that executes commands, so review what it does before installing.
+> See [SECURITY.md](SECURITY.md).
+
+**From source** (development, or to run the engine directly):
+
+```bash
+git clone https://github.com/leandrojo/forum
+cd forum
+./examples/forum_debate.sh --rounds 2 "Your question here" grok codex gemini
+```
+
 ## Quick start
 
 You need at least one of these CLIs authenticated on your machine:
