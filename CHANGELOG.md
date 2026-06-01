@@ -6,6 +6,12 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+### Changed
+- The `claude` participant now defaults to **opus** (parity with the other
+  providers' flagship defaults), with automatic fallback to sonnet, then haiku,
+  via `claude --fallback-model`. This keeps the strongest model as the default
+  while still working on non-Max plans where opus is unavailable.
+
 ## [0.1.0] - 2026-06-01
 
 First public release: a working, equal-footing, multi-round debate loop.

@@ -19,7 +19,19 @@ get_claude_model_id() {
         claude-opus|opus)     echo "opus" ;;
         claude-haiku|haiku)   echo "haiku" ;;
         claude-sonnet|sonnet) echo "sonnet" ;;
-        *)                    echo "sonnet" ;;
+        *)                    echo "opus" ;;
+    esac
+}
+
+# Model used automatically when the primary is overloaded or not available on
+# the account's plan (e.g. opus on a non-Max plan). This lets the default lead
+# with the strongest model while still working everywhere: opus -> sonnet ->
+# haiku. (Claude CLI's --fallback-model only works with --print, which is our
+# mode.)
+get_claude_fallback_id() {
+    case "$(get_claude_model_id "$1")" in
+        opus) echo "sonnet" ;;
+        *)    echo "haiku" ;;
     esac
 }
 
@@ -30,6 +42,9 @@ call_claude() {
 
     local model
     model="$(get_claude_model_id "$participant_id")"
+
+    local fallback
+    fallback="$(get_claude_fallback_id "$participant_id")"
 
     local claude_bin="${CLAUDE_BIN:-claude}"
     forum_require_command "$claude_bin" "Claude" || return $?
@@ -47,6 +62,7 @@ call_claude() {
         run_with_timeout "$timeout" \
             "$claude_bin" -p \
             --model "$model" \
+            --fallback-model "$fallback" \
             --output-format text \
             --disable-slash-commands >"$stdout_file" 2>"$stderr_file"; then
         :
