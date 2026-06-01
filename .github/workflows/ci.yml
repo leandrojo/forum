@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ShellCheck (advisory)
+        continue-on-error: true
+        run: shellcheck providers/*.sh utils/*.sh core/*.sh examples/*.sh tests/*.sh
+
+      - name: Provider contract test
+        run: ./tests/provider_contract_test.sh
+
+      - name: Orchestrator smoke test
+        run: ./tests/orchestrator_smoke_test.sh

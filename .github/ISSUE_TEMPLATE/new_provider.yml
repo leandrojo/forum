@@ -1,0 +1,39 @@
+name: New provider proposal
+description: Propose a new provider adapter (a new model participant)
+labels: ["provider"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New adapters are welcome as long as they implement the exact same
+        execution contract as the existing ones. This checklist is a
+        self-assessment against `providers/base.sh`.
+  - type: input
+    id: model
+    attributes:
+      label: Model / CLI
+      description: Which model, and through which CLI binary?
+      placeholder: "e.g. Llama via `ollama`"
+    validations:
+      required: true
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Contract compliance
+      description: Confirm the adapter will honor the shared contract.
+      options:
+        - label: stdout carries ONLY the clean final model response
+          required: true
+        - label: stderr carries useful, standardized errors
+          required: true
+        - label: exit codes are respected (0 success, 124 timeout)
+          required: true
+        - label: it uses run_with_timeout and the neutral shared preamble
+          required: true
+        - label: no special-casing or per-model prompting outside the adapter file
+          required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Anything else relevant (auth model, headless flag, quirks).

@@ -1,134 +1,164 @@
 # Forum
 
-[![GitHub](https://img.shields.io/badge/GitHub-leandrojo%2Fforum-blue?logo=github)](https://github.com/leandrojo/forum)
+[![CI](https://github.com/leandrojo/forum/actions/workflows/ci.yml/badge.svg)](https://github.com/leandrojo/forum/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/leandrojo/forum?sort=semver)](https://github.com/leandrojo/forum/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Forum** is a deliberately narrow, high-quality tool for running structured multi-model debates.
+**Run equal-footing, auditable debates between local AI CLIs — and get a full transcript of every round.**
 
-It exists for one purpose only: **facilitate rigorous, auditable deliberation between different AI models** (Grok, Codex, Gemini, Claude, and others) while treating every participant as a true equal.
+Forum points your already-authenticated CLIs (`grok`, `codex`, `gemini`, `claude`)
+at the same question, runs them as peers through one strict execution contract,
+and writes a structured, replayable transcript. No API keys. No model favoritism.
+The transcript is the product.
 
-> "Quality must emerge from the debate itself — not from branding or favoritism."
+## Show me
 
-## Philosophy
-
-- **Radical Equality**: Every model is a peer. No special casing, no favorite providers, no "Grok mode".
-- **Methodology First**: The value comes from *how* the debate is structured (parallel rounds, cross-critique, convergence, etc.), not which models participate.
-- **Transparency**: Every prompt sent and every response received is recorded in a structured, human- and machine-readable transcript.
-- **Extreme Focus**: Forum rejects feature bloat. It is not another agent framework or orchestration platform. It is a sharp instrument for one thing: better thinking through structured conflict of ideas.
-
-Forum was extracted from larger systems precisely to escape the "everything including the kitchen sink" trap. It will never become another bloated platform.
-
-## Current Status (v0.1)
-
-**Working today:**
-
-- Clean, documented execution contract for all providers (`call_participant`)
-- Normalized adapters for **Grok**, **Codex**, **Gemini**, and **Claude** (with consistent timeout, error, and output handling)
-- Support for multi-round parallel debates with neutral context passing between rounds
-- Structured transcripts written to disk (prompts, responses, metadata, errors)
-- Local contract and smoke tests
-
-**Not yet implemented** (planned):
-
-- Real debate protocols beyond parallel rounds (cross-critique, blinded evaluation, iterative convergence)
-- Roles / personas decoupled from specific models
-- Automated synthesis
-
-See [docs/CONTINUITY_PLAN.md](docs/CONTINUITY_PLAN.md) for the detailed roadmap.
-
-## Quick Start
-
-### Prerequisites
-
-You need at least one of the following CLIs authenticated on your machine:
-
-- `grok` (Grok Build CLI)
-- `codex` (OpenAI Codex / GitHub Copilot CLI)
-- `gemini` (Google Gemini CLI)
-- `claude` (Claude Code CLI, headless `-p` mode)
-
-### Run a Debate
+**1. Run a debate:**
 
 ```bash
-# Basic two-round parallel debate
-./examples/forum_debate.sh "Should we prioritize speed or long-term quality?" grok codex gemini
+./examples/forum_debate.sh --rounds 1 \
+  "Should a small CLI prioritize zero runtime dependencies over developer convenience?" \
+  codex grok claude-haiku
+```
+
+**2. Watch it run** (each participant is a real, local CLI):
+
+```
+Round 1:
+  P1 (codex)... ok
+  P2 (grok)... ok
+  P3 (claude-haiku)... ok
+Transcript: transcripts/debate-20260601T175402Z-70200/transcript.md
+```
+
+**3. Read the artifact** — a single Markdown transcript with each peer's answer
+under a neutral label. Excerpt:
+
+```markdown
+### P1 (codex)
+Yes, for a small single-purpose open-source CLI, zero runtime dependencies
+should usually be the default... allow narrowly justified exceptions where the
+operational benefit is concrete and durable.
+
+### P2 (grok)
+Yes, it should prioritize zero runtime dependencies. The user-facing costs of
+even modest dependencies are paid on every invocation by every user, while the
+developer-convenience benefit is paid once by a small set of contributors...
+```
+
+→ Full transcript of this run: [`docs/examples/sample-debate.md`](docs/examples/sample-debate.md)
+
+## Why this isn't generic multi-agent tooling
+
+Forum's distinctiveness is a *refusal*, enforced in code:
+
+- **One contract for everyone.** Every participant goes through `call_participant`
+  in [`providers/base.sh`](providers/base.sh): stdout is the clean model answer,
+  stderr is errors, exit codes are respected, timeouts are uniform. A model's
+  adapter is the *only* place a difference may exist — there is no `if model == X`
+  anywhere in the orchestration.
+- **No keys, no broker.** It shells out to CLIs you already authenticated. No
+  OpenRouter, no API-key plumbing.
+- **The transcript is the source of truth**, not a side effect. Prompts, each
+  participant's raw response, errors, and metadata are written per round.
+
+## When to use Forum
+
+- You want several models to genuinely deliberate on a decision and you want the
+  full record to audit later.
+- You value a single, inspectable shell engine over a hosted black box.
+
+## When *not* to use it
+
+- You need a chat UI, a hosted service, or a general agent framework. Forum is
+  none of those, on purpose — see the [roadmap](docs/ROADMAP.md).
+
+## Quick start
+
+You need at least one of these CLIs authenticated on your machine:
+
+| Provider | Default command | Override variable | Last tested |
+|----------|-----------------|-------------------|-------------|
+| Grok     | `grok`          | `GROK_BIN`        | 2026-06-01  |
+| Codex    | `codex`         | `CODEX_BIN`       | 2026-06-01  |
+| Gemini   | `gemini`        | `GEMINI_BIN`      | 2026-06-01  |
+| Claude   | `claude` (`-p`) | `CLAUDE_BIN`      | 2026-06-01  |
+
+> Forum depends on external CLIs that evolve. The "last tested" column is when
+> each adapter was last verified against a live debate.
+
+```bash
+# Two-round debate across three peers
+./examples/forum_debate.sh --rounds 2 "Evaluate this architecture decision" grok codex gemini
 
 # Single round
-./examples/forum_debate.sh --rounds 1 "Evaluate this architecture" codex gemini
+./examples/forum_debate.sh --rounds 1 "Queues or direct processing for welcome emails?" codex gemini
 ```
 
-The script will output the path to a rich `transcript.md` containing the full debate.
+The script prints the path to a `transcript.md` with the full debate.
 
-## Configuration
+Provider model selection and sandboxing are controlled via environment
+variables — see the individual files under [`providers/`](providers/).
 
-Forum discovers the provider CLIs via `PATH` by default, with environment variable overrides:
-
-| Provider | Default Command | Override Variable |
-|----------|-----------------|-------------------|
-| Grok     | `grok`          | `GROK_BIN`        |
-| Codex    | `codex`         | `CODEX_BIN`       |
-| Gemini   | `gemini`        | `GEMINI_BIN`      |
-| Claude   | `claude`        | `CLAUDE_BIN`      |
-
-Example:
-
-```bash
-export GROK_BIN="/custom/path/to/grok"
-export CODEX_BIN="codex"
-./examples/forum_debate.sh "..." grok codex
-```
-
-Sandbox and other options can also be controlled via environment variables (see provider files for details).
-
-## Project Structure
+## Project structure
 
 ```
 forum/
-├── providers/               # Model adapters (strictly equal treatment)
-│   ├── base.sh              # Common contract + dispatcher
-│   ├── grok.sh
-│   ├── codex.sh
-│   ├── gemini.sh
-│   └── claude.sh
-├── utils/
-│   └── common.sh            # Shared utilities (timeout, normalization, error handling)
-├── core/
-│   └── debate_orchestrator.sh
-├── examples/
-│   └── forum_debate.sh      # Recommended entrypoint
-├── tests/                   # Contract and smoke tests
-├── docs/
-│   └── CONTINUITY_PLAN.md   # Living roadmap
-└── attic/                   # Historical artifacts (gitignored)
+├── providers/                  # Model adapters — strictly equal treatment
+│   ├── base.sh                 # The execution contract + dispatcher
+│   ├── grok.sh  codex.sh  gemini.sh  claude.sh
+├── utils/common.sh             # Shared timeout / normalization / error handling
+├── core/debate_orchestrator.sh # Multi-round orchestration + neutral context
+├── examples/forum_debate.sh    # Recommended entrypoint
+├── tests/                      # Contract + smoke tests (run with stubs, no auth)
+└── docs/
+    ├── DESIGN.md               # Architecture + naming rationale
+    ├── ROADMAP.md              # Now / Next / Later / Not planned
+    ├── examples/               # Curated sample transcripts
+    └── archive/                # Historical planning notes
 ```
 
-## Adding a New Provider
+## Adding a provider
 
-1. Create `providers/yourmodel.sh`
-2. Implement `call_yourmodel()`
-3. Source it in `base.sh` and add the dispatch case
-4. Ensure it follows the exact same contract as the others (stdout = clean model output only, stderr = useful errors, exit codes respected)
+1. Create `providers/yourmodel.sh` implementing `call_yourmodel()`.
+2. Source it in `base.sh` and add the dispatch case.
+3. Follow the exact same contract as the others (clean stdout, useful stderr,
+   respected exit codes, neutral preamble, `run_with_timeout`).
 
-See the existing adapters and `base.sh` for the full contract specification.
+The contract is specified in [`providers/base.sh`](providers/base.sh) and the
+existing adapters are short — read one before writing yours. See
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Development
 
-Run the local tests:
-
 ```bash
-./tests/provider_contract_test.sh
-./tests/orchestrator_smoke_test.sh
+./tests/provider_contract_test.sh   # provider contract, via stubs
+./tests/orchestrator_smoke_test.sh  # multi-round orchestration, via stubs
 ```
+
+Neither test needs an authenticated CLI.
 
 ## Why "Forum"?
 
-The Roman Forum was the physical and symbolic center of public debate in the Roman Republic — one of history's earliest structured attempts at collective deliberation. We borrow that spirit: serious, equal, transparent, and focused on better collective reasoning rather than spectacle.
+The Roman Forum was the physical and symbolic center of public debate in the
+Roman Republic — one of history's earliest structured attempts at collective
+deliberation. We borrow that spirit: serious, equal, transparent, and focused on
+better collective reasoning rather than spectacle. The full naming rationale is
+in [docs/DESIGN.md](docs/DESIGN.md).
+
+## Contributing
+
+Forum welcomes contributions **on narrow terms** — new provider adapters, debate
+protocols, transcript/auditability work, portability, and tests. It will decline
+scope creep by charter. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-MIT (see LICENSE file)
+MIT — see [LICENSE](LICENSE).
 
 ---
 
-This project is intentionally small. If you're looking for a massive multi-agent platform, this is not it.
-
-If you want a sharp, principled tool for high-quality multi-model debate — welcome.
+This project is intentionally small. If you're looking for a massive multi-agent
+platform, this is not it. If you want a sharp, principled tool for high-quality
+multi-model debate — welcome.

@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a problem running a debate or a provider adapter
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Forum produces structured transcripts — use them. The more of the
+        fields below you fill in, the faster this gets fixed.
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+      description: Which participant misbehaved?
+      placeholder: "grok | codex | gemini | claude | claude-haiku | ..."
+    validations:
+      required: true
+  - type: input
+    id: cli-version
+    attributes:
+      label: Provider CLI version
+      description: Output of the provider CLI's --version (e.g. `claude --version`).
+      placeholder: "e.g. claude 1.x.x"
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command
+      description: The full command you ran.
+      placeholder: './examples/forum_debate.sh --rounds 2 "..." codex gemini'
+      render: bash
+    validations:
+      required: true
+  - type: input
+    id: transcript
+    attributes:
+      label: Transcript directory
+      description: Path to the failing debate directory under transcripts/.
+      placeholder: "transcripts/debate-YYYYMMDDTHHMMSSZ-XXXX/"
+    validations:
+      required: true
+  - type: textarea
+    id: stderr
+    attributes:
+      label: Relevant .err snippet
+      description: Paste the relevant content from the participant's .err file.
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: OS / shell
+      placeholder: "macOS 15 / zsh, Ubuntu 24.04 / bash, ..."
+    validations:
+      required: true

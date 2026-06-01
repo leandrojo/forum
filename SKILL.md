@@ -6,6 +6,9 @@ version: 0.1.0
 
 # Forum
 
+> **This file is for agent runtimes and integration.** Human users should start
+> at [README.md](README.md).
+
 **Forum** is a focused skill for running high-quality, structured debates between multiple AI models.
 
 Unlike bloated orchestration frameworks, Forum exists for one purpose only: to facilitate rigorous deliberation between different models (Codex, Gemini, Grok, Claude, and others) using well-defined methodologies.
