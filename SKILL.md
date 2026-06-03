@@ -1,101 +1,73 @@
 ---
 name: forum
-description: "Structured multi-model debates. Equal participation across providers with multiple deliberation methodologies."
+description: Run structured, equal-footing debates between multiple AI model CLIs (grok, codex, gemini, claude) with neutral multi-round context and an auditable transcript.
 version: 0.1.0
+license: MIT
 ---
 
 # Forum
 
-> **This file is for agent runtimes and integration.** Human users should start
-> at [README.md](README.md).
+> **This file is for agent runtimes.** Human users should start at [README.md](README.md).
 
-**Forum** is a focused skill for running high-quality, structured debates between multiple AI models.
+**Forum** runs high-quality, structured debates between multiple AI models. It
+points your already-authenticated CLIs at the same question, runs them as equal
+peers through one execution contract, and writes a structured transcript.
 
-Unlike bloated orchestration frameworks, Forum exists for one purpose only: to facilitate rigorous deliberation between different models (Codex, Gemini, Grok, Claude, and others) using well-defined methodologies.
+## Core philosophy
 
-## Core Philosophy
+- All models are treated as **equals** — no special treatment in code or prompting.
+- Quality emerges from the **debate itself**, not from branding or favoritism.
+- **Transparency**: every prompt and every response is recorded in the transcript.
+- **Extreme focus**: deliberation only. No bloat.
 
-- All models are treated as **equals**. No model receives special treatment in code or prompting.
-- Quality must emerge from the **debate itself**, not from branding or favoritism.
-- Multiple protocols are supported: parallel rounds, cross-critique, blinded evaluation, iterative convergence, etc.
-- The goal is better thinking through structured conflict of ideas.
+## Supported participants (equal footing)
 
-## Supported Providers (equal footing)
+`grok` · `codex` · `gemini` · `claude` — each via its already-authenticated
+local CLI, in headless mode. Others are extensible (one adapter per provider).
 
-- Grok (via local CLI, session-authenticated)
-- Codex
-- Gemini
-- Claude (via Claude Code CLI in headless `-p` mode)
-- Others (extensible)
+## How to run a debate
 
-## Basic Usage
+This skill is **self-contained**: the debate engine ships inside this skill's
+own folder. Do not assume any fixed path on the machine.
 
-```bash
-/forum Should we prioritize speed or long-term maintainability in this complex system?
-/forum -r 2 "Evaluate our authentication architecture"
-```
+1. **Locate the engine.** Resolve `FORUM_HOME` in this order:
+   - `$FORUM_HOME` if already set;
+   - otherwise the directory that contains *this* `SKILL.md` (the installed
+     skill folder, e.g. `~/.claude/skills/forum/` or `<project>/.claude/skills/forum/`);
+   - dev fallback: a local clone of the repo.
+   The entrypoint is `"$FORUM_HOME/examples/forum_debate.sh"` (all engine scripts
+   resolve their own paths, so it works from any install location).
 
-## Key Features
-
-- True headless execution for all providers
-- No API keys required when official CLIs are already authenticated
-- Clean, auditable debate transcripts
-- Multi-round parallel debates with neutral context passing
-- Designed so that stronger reasoning wins — not the model with the fanciest name
-
-## Design Principles
-
-- Simplicity over features
-- Equality between participants
-- Transparency (every prompt and response is recorded)
-- Methodological flexibility
-
-This skill was born from extracting the best debate mechanics from larger systems while stripping away everything that wasn't pure deliberation.
-
-## How to Use
-
-This skill works in both **Grok** and **Claude** environments.
-
-### In a Grok session
-When this skill is active (or when you are inside the `~/Workspaces/forum` directory), you can invoke structured debates like this:
-
-**Basic parallel debate:**
-```
-/forum "Should we prioritize speed or long-term quality in this complex project?" grok codex gemini
-```
-
-**Using the underlying engine directly (recommended for now):**
-Use the `!` command or ask me to run:
-```bash
-cd ~/Workspaces/forum && ./examples/forum_debate.sh --rounds 2 "Your question here" grok codex
-```
-
-**Recommended workflow in a new Grok session:**
-
-1. Start Grok in the forum directory:
+2. **Run it.** Keep transcripts in the user's workspace, not the skill folder:
    ```bash
-   cd ~/Workspaces/forum && grok
+   FORUM_TRANSCRIPT_DIR="${PWD}/.forum-transcripts" \
+     "$FORUM_HOME/examples/forum_debate.sh" --rounds 2 "<question>" <participants...>
    ```
+   - Default to **2 rounds** unless the user asks otherwise.
+   - Default participants: those whose CLI is installed (check with `command -v`).
+     Use the bare provider name (`grok`, `codex`, `gemini`, `claude`) so each
+     adapter picks its own sensible default model — don't pin a tier.
 
-2. Once in the session, say something like:
-   "Open a 2-round Forum on [topic]. Use grok, codex and gemini in parallel mode."
+3. **Synthesize.** Read the printed `transcript.md`, then give the user a concise
+   synthesis: points of consensus, real disagreements, and a recommendation.
+   Never favor a participant by name.
 
-The skill will then guide the debate using the local engine while keeping all models on equal footing.
+## Invocation patterns
 
-### In a Claude session (Claude Code / Claude Desktop)
+```
+/forum Should we use a queue or direct processing for welcome emails?
+/forum -r 2 "Evaluate this authentication architecture" grok codex gemini claude
+```
 
-Just speak naturally:
+Run it directly from a clone too:
 
-- "Use Forum to run a 2-round parallel debate on [topic] with grok, codex and gemini."
-- "Run a structured debate with the Forum skill on this decision, 2 rounds and all three models."
+```bash
+./examples/forum_debate.sh --rounds 2 "Your question here" grok codex gemini
+```
 
-Claude will automatically detect the Forum skill (installed at `~/.claude/skills/forum`) and use the local engine from `~/Workspaces/forum` to run the debate.
+## Current scope (v0.1)
 
-## Current Limitations (v0.1)
-
-- Parallel debates with 1-N rounds are working.
-- Cross-critique, convergence, roles, synthesis automation, and analysis tools are intentionally out of scope for Phase 0.
-- Synthesis is currently manual.
-- Transcripts are local generated artifacts under `transcripts/`, not committed project docs.
-
-This is intentional — we are keeping the skill extremely focused.
+- Parallel debates with 1–N rounds and neutral context passing: **working**.
+- Cross-critique, blinded evaluation, iterative convergence, roles, and automated
+  synthesis are intentionally out of scope for now. See [docs/ROADMAP.md](docs/ROADMAP.md).
+- Transcripts are local generated artifacts, not committed project docs.
