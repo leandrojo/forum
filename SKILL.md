@@ -1,7 +1,7 @@
 ---
 name: forum
 description: Run structured, equal-footing debates between multiple AI model CLIs (grok, codex, gemini, claude) with neutral multi-round context and an auditable transcript.
-version: 0.1.0
+version: 0.2.0
 license: MIT
 ---
 

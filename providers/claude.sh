@@ -16,22 +16,24 @@ get_claude_model_id() {
     local participant_id="$1"
 
     case "$participant_id" in
+        claude-fable|fable)   echo "fable" ;;
         claude-opus|opus)     echo "opus" ;;
         claude-haiku|haiku)   echo "haiku" ;;
         claude-sonnet|sonnet) echo "sonnet" ;;
-        *)                    echo "opus" ;;
+        *)                    echo "fable" ;;
     esac
 }
 
-# Model used automatically when the primary is overloaded or not available on
-# the account's plan (e.g. opus on a non-Max plan). This lets the default lead
-# with the strongest model while still working everywhere: opus -> sonnet ->
-# haiku. (Claude CLI's --fallback-model only works with --print, which is our
-# mode.)
+# Models used automatically when the primary is overloaded or not available on
+# the account's plan (e.g. fable/opus on a non-Max plan). This lets the default
+# lead with the strongest model while still working everywhere: fable -> opus
+# -> sonnet -> haiku. (Claude CLI's --fallback-model accepts a comma-separated
+# list, tried in order, and only works with --print, which is our mode.)
 get_claude_fallback_id() {
     case "$(get_claude_model_id "$1")" in
-        opus) echo "sonnet" ;;
-        *)    echo "haiku" ;;
+        fable) echo "opus,sonnet,haiku" ;;
+        opus)  echo "sonnet,haiku" ;;
+        *)     echo "haiku" ;;
     esac
 }
 

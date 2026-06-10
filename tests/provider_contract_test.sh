@@ -98,7 +98,8 @@ assert_equals "Claude answer" "$claude_output" "claude stdout is normalized cont
 assert_equals "gpt-5.4" "$(get_participant_model_id codex)" "codex model metadata"
 assert_equals "gemini-2.5-pro" "$(get_participant_model_id gemini)" "gemini model metadata"
 assert_equals "grok-build" "$(get_participant_model_id grok)" "grok model metadata"
-assert_equals "opus" "$(get_participant_model_id claude)" "claude model metadata"
+assert_equals "fable" "$(get_participant_model_id claude)" "claude model metadata"
+assert_equals "opus" "$(get_participant_model_id claude-opus)" "claude opus model metadata"
 assert_equals "sonnet" "$(get_participant_model_id claude-sonnet)" "claude sonnet model metadata"
 
 set +e

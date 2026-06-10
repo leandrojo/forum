@@ -34,7 +34,7 @@ call_participant() {
         grok|grok-*|xai-*)
             call_grok "$participant_id" "$prompt" "$timeout"
             ;;
-        claude|claude-sonnet|claude-opus|claude-haiku|sonnet|opus|haiku)
+        claude|claude-fable|claude-sonnet|claude-opus|claude-haiku|fable|sonnet|opus|haiku)
             call_claude "$participant_id" "$prompt" "$timeout"
             ;;
         *)
@@ -57,7 +57,7 @@ get_participant_model_id() {
         grok|grok-*|xai-*)
             get_grok_model_id "$participant_id"
             ;;
-        claude|claude-sonnet|claude-opus|claude-haiku|sonnet|opus|haiku)
+        claude|claude-fable|claude-sonnet|claude-opus|claude-haiku|fable|sonnet|opus|haiku)
             get_claude_model_id "$participant_id"
             ;;
         *)

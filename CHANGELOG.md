@@ -6,11 +6,15 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-10
+
 ### Changed
-- The `claude` participant now defaults to **opus** (parity with the other
-  providers' flagship defaults), with automatic fallback to sonnet, then haiku,
-  via `claude --fallback-model`. This keeps the strongest model as the default
-  while still working on non-Max plans where opus is unavailable.
+- The `claude` participant now defaults to **fable** (Claude Fable 5, the most
+  capable tier — parity with the other providers' flagship defaults), with
+  automatic fallback through opus, sonnet, then haiku via
+  `claude --fallback-model` (comma-separated chain, tried in order). This keeps
+  the strongest model as the default while still working on plans where
+  fable/opus are unavailable. New participant aliases: `claude-fable` / `fable`.
 
 ## [0.1.0] - 2026-06-01
 
@@ -30,5 +34,6 @@ First public release: a working, equal-footing, multi-round debate loop.
 - Prompt delivery to participants: the full question + prior-round context now
   reaches every model (previously only the neutral preamble was delivered).
 
-[Unreleased]: https://github.com/leandrojo/forum/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/leandrojo/forum/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/leandrojo/forum/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/leandrojo/forum/releases/tag/v0.1.0
